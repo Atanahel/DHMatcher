@@ -1,5 +1,4 @@
 # DHMatcher
----
 
 This is a `Flask` web service that allows indexing of images in order to make them matchable.
 
@@ -16,11 +15,11 @@ It is divided into two parts `database` which are operations to modify the datab
 
 | URL         	| Method 	| Description                                              	|
 |-------------	|--------	|----------------------------------------------------------	|
-| `/database` 	| GET    	| Get the stored metadata of an image in the database      	|
-| `/database` 	| POST   	| Add an image in the database with its metadata           	|
-| `/database` 	| PUT    	| Modify the metadata of an existing image in the database 	|
-| `/database` 	| DELETE 	| Delete an image from the database                        	|
-| `/search`   	| GET    	| Performs a search operation on the database              	|
+| `<web-server-url>/database` 	| GET    	| Get the stored metadata of an image in the database      	|
+| `<web-server-url>/database` 	| POST   	| Add an image in the database with its metadata           	|
+| `<web-server-url>/database` 	| PUT    	| Modify the metadata of an existing image in the database 	|
+| `<web-server-url>/database` 	| DELETE 	| Delete an image from the database                        	|
+| `<web-server-url>/search`   	| GET    	| Performs a search operation on the database              	|
 
 
 ### `<web-server-url>/database`
@@ -67,7 +66,7 @@ All these fields are optional, and will be defaulted to empty if unavailable.
 
 * Adding an image from the Web Gallery to the database 
 
-**POST** `/database
+**POST** `<web-server-url>/database`
 
 ```javascript
 {
@@ -84,7 +83,7 @@ All these fields are optional, and will be defaulted to empty if unavailable.
 
 * Searching similar paintings
 
-**GET** `/search`
+**GET** `<web-server-url>/search`
 
 ```javascript
 {
