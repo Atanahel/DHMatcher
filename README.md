@@ -4,7 +4,8 @@ This is a `Flask` web service that allows indexing of images in order to make th
 
 Principles :
 
-* All images are indexed by the web url at which they are accessible, usually encoded as `image_url` in the `json`.
+* All images are indexed by the web url at which they are accessible, usually encoded plainly as `image_url` in the `json`
+or in an url-compliant way directly in the url.
 * Arbitrary metadata can be linked to an image.
 * All operations require data as `json` for the request and give a `json` answer as well.
 
@@ -15,40 +16,45 @@ It is divided into two parts `database` which are operations to modify the datab
 
 | URL         	| Method 	| Description                                              	|
 |-------------	|--------	|----------------------------------------------------------	|
-| `<web-server-url>/database` 	| GET    	| Get the stored metadata of an image in the database      	|
 | `<web-server-url>/database` 	| POST   	| Add an image in the database with its metadata           	|
-| `<web-server-url>/database` 	| PUT    	| Modify the metadata of an existing image in the database 	|
-| `<web-server-url>/database` 	| DELETE 	| Delete an image from the database                        	|
+| `<web-server-url>/database/<encoded-image-url>` 	| GET    	| Get the stored metadata of an image in the database      	|
+| `<web-server-url>/database/<encoded-image-url>` 	| PUT    	| Modify the metadata of an existing image in the database 	|
+| `<web-server-url>/database/<encoded-image-url>` 	| DELETE 	| Delete an image from the database                        	|
 | `<web-server-url>/search`   	| GET    	| Performs a search operation on the database              	|
 
 
 ### `<web-server-url>/database`
 
+* **POST**
+
+Body : `json` with fields :
+    - `image_url`
+    - metadata fields
+
+
+### `<web-server-url>/database/<encoded-image-url>`
+
 * **GET** 
 
-`image_url`
+Body : none
 
 * **PUT**
 
-`image_url`, metadata fields
-
-* **POST**
-
-`image_url`, metadata fields
+Body : `json` with metadata fields
 
 * **DELETE** 
 
-`image_url`
+Body : none
 
 
+### `<web-server-url>/search`
 
-### `<web-server-url>/searching`
+* **POST**
 
-* **GET**
+Body : `json` with fields :
 
-`positive_image_urls` list of positive examples
-
-(optional) `negative_image_urls` list of negative examples
+    - `positive_image_urls` list of positive examples
+    - (optional) `negative_image_urls` list of negative examples
 
 
 ## Metadata structure
@@ -83,7 +89,7 @@ All these fields are optional, and will be defaulted to empty if unavailable.
 
 * Searching similar paintings
 
-**GET** `<web-server-url>/search`
+**POST** `/search`
 
 ```javascript
 {
