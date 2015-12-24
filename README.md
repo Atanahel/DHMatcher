@@ -5,7 +5,7 @@ This is a `Flask` web service that allows indexing of images in order to make th
 Principles :
 
 * All images are indexed by the web url at which they are accessible, usually encoded plainly as `image_url` in the `json`
-or in an url-compliant way directly in the url.
+or directly into the API url.
 * Arbitrary metadata can be linked to an image.
 * All operations require data as `json` for the request and give a `json` answer as well.
 
@@ -17,9 +17,9 @@ It is divided into two parts `database` which are operations to modify the datab
 | URL         	| Method 	| Description                                              	|
 |-------------	|--------	|----------------------------------------------------------	|
 | `<web-server-url>/database` 	| POST   	| Add an image in the database with its metadata           	|
-| `<web-server-url>/database/<encoded-image-url>` 	| GET    	| Get the stored metadata of an image in the database      	|
-| `<web-server-url>/database/<encoded-image-url>` 	| PUT    	| Modify the metadata of an existing image in the database 	|
-| `<web-server-url>/database/<encoded-image-url>` 	| DELETE 	| Delete an image from the database                        	|
+| `<web-server-url>/database/<image-url>` 	| GET    	| Get the stored metadata of an image in the database      	|
+| `<web-server-url>/database/<image-url>` 	| PUT    	| Modify the metadata of an existing image in the database 	|
+| `<web-server-url>/database/<image-url>` 	| DELETE 	| Delete an image from the database                        	|
 | `<web-server-url>/search`   	| GET    	| Performs a search operation on the database              	|
 
 
@@ -32,7 +32,7 @@ Body : `json` with fields :
     - metadata fields
 
 
-### `<web-server-url>/database/<encoded-image-url>`
+### `<web-server-url>/database/<image-url>`
 
 * **GET** 
 
