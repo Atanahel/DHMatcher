@@ -14,13 +14,13 @@ or directly into the API url.
 It is divided into two parts `database` which are operations to modify the database and `search` for the searching operations.
 
 
-| URL         	| Method 	| Description                                              	|
-|-------------	|--------	|----------------------------------------------------------	|
-| `<web-server-url>/database` 	| POST   	| Add an image in the database with its metadata           	|
+| URL         	                            | Method 	| Description                                              	|
+|------------------------------------------ |--------	|----------------------------------------------------------	|
+| `<web-server-url>/database` 	            | POST   	| Add an image in the database with its metadata           	|
 | `<web-server-url>/database/<image-url>` 	| GET    	| Get the stored metadata of an image in the database      	|
 | `<web-server-url>/database/<image-url>` 	| PUT    	| Modify the metadata of an existing image in the database 	|
 | `<web-server-url>/database/<image-url>` 	| DELETE 	| Delete an image from the database                        	|
-| `<web-server-url>/search`   	| GET    	| Performs a search operation on the database              	|
+| `<web-server-url>/search`   	            | GET    	| Performs a search operation on the database              	|
 
 
 ### `<web-server-url>/database`
@@ -55,6 +55,7 @@ Body : `json` with fields :
 
     - `positive_image_urls` list of positive examples
     - (optional) `negative_image_urls` list of negative examples
+    - (optional) `nb_results` number of results to be returned. Default : 30
 
 
 ## Metadata structure
