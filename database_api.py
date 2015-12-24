@@ -30,6 +30,7 @@ class DatabaseAPI(Resource):
         image_url = args['image_url']
         if data_manager.has_url(image_url):
             abort(400, "image_url already present in the database")
+        # TODO generate image signature
         data_manager.add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
 
 
