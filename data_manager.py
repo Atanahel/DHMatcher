@@ -31,7 +31,7 @@ class DataManager:
 
     @classmethod
     def add_element(cls, element: DatabaseElement):
-        cls.signature_array = np.append(cls.signature_array, element.signature.reshape((1,-1)), axis=0)
+        cls.signature_array = np.append(cls.signature_array, element.signature.reshape((1, -1)), axis=0)
         cls.metadata_array = np.append(cls.metadata_array, np.array([element.metadata]), axis=0)
         cls.url_metadata_index[element.metadata['image_url']] = cls.metadata_array.shape[0] - 1
 
