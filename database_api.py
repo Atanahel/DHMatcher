@@ -6,7 +6,8 @@ import os.path
 from matplotlib.pyplot import imread
 import io
 from urllib.request import urlopen
-
+from signature_extractor import SignatureExtractorManager
+from typing import Dict
 
 metadata_parser = reqparse.RequestParser()
 metadata_parser.add_argument('author', type=str, default='', location='json')
@@ -25,11 +26,12 @@ def _get_image_url(args: dict) -> str:
         return image_url
 
 
-def _generate_signature_from_url(image_url: str) -> np.ndarray:
+def _generate_signatures_from_url(image_url: str) -> Dict[str, np.ndarray]:
     ext = os.path.splitext(image_url)[1]
     im = imread(io.BytesIO(urlopen(image_url).read()), ext)
     if len(im.shape) == 2:
         im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    return SignatureExtractorManager.compute_signatures(im)
 
 
 class DatabaseAPI(Resource):
@@ -39,8 +41,7 @@ class DatabaseAPI(Resource):
         image_url = args['image_url']
         if DataManager.has_url(image_url):
             abort(400, "image_url already present in the database")
-        # TODO generate image signature
-        DataManager.add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
+        DataManager.add_element(DatabaseElement(args, _generate_signatures_from_url(image_url)))
 
 
 def _check_has_image_url(image_url: str) -> str:
@@ -63,4 +64,3 @@ class DatabaseElementAPI(Resource):
     def delete(self, image_url: str):
         _check_has_image_url(image_url)
         DataManager.remove_url(image_url)
-

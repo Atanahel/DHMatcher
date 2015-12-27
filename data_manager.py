@@ -3,10 +3,10 @@ from typing import Dict
 
 
 class DatabaseElement:
-    def __init__(self, metadata: dict, signature: np.ndarray):
+    def __init__(self, metadata: dict, signatures: Dict[str, np.ndarray]):
         assert('image_url' in metadata)
         self.metadata = metadata
-        self.signature = signature
+        self.signatures = signatures
 
 
 class DataManager:
@@ -31,7 +31,7 @@ class DataManager:
 
     @classmethod
     def add_element(cls, element: DatabaseElement):
-        cls.signature_array = np.append(cls.signature_array, element.signature.reshape((1, -1)), axis=0)
+        cls.signature_array = np.append(cls.signature_array, element.signatures['VGG16_center_fc6'].reshape((1, -1)), axis=0)
         cls.metadata_array = np.append(cls.metadata_array, np.array([element.metadata]), axis=0)
         cls.url_metadata_index[element.metadata['image_url']] = cls.metadata_array.shape[0] - 1
 

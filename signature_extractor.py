@@ -1,6 +1,8 @@
 from typing import Union, List, Callable, Tuple, Dict
 import theano
+from lasagne import layers
 import numpy as np
+import models_lasagne
 
 
 class SignatureExtractor:
@@ -12,6 +14,7 @@ class SignatureExtractor:
         if isinstance(signature_names, str):
             self.signature_names = [signature_names]
         else:
+            assert(computing_function.n_returned_outputs == len(signature_names))
             self.signature_names = signature_names
 
     def compute_signatures(self, image: np.ndarray) -> List[Tuple[str, np.ndarray]]:
@@ -49,3 +52,12 @@ class SignatureExtractorManager:
         # Check that the signature name does not already exists
         assert(len(set(cls.get_all_signature_names()).intersection(signature_extractor.signature_names)) == 0)
         cls.signature_extractor_list.append(signature_extractor)
+
+    @classmethod
+    def initialize_signature_extractors(cls):
+        net, mean = models_lasagne.build_model_vgg16()
+        computing_function = theano.function([net['input'].input_var], layers.get_output([net['fc6'], net['fc7']]))
+        signature_extractor = SignatureExtractor(lambda img: models_lasagne.prep_image_vgg(img, mean),
+                                                 computing_function,
+                                                 ['VGG16_center_fc6', 'VGG16_center_fc7'])
+        cls.add_signature_extractor(signature_extractor)

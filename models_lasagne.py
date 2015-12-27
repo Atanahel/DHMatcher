@@ -33,8 +33,8 @@ def prep_image_vgg(im: np.ndarray, mean_value: np.ndarray) -> np.ndarray:
     """
     if len(im.shape) == 2:
         im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
-    elif len(im.shape) == 4:
-        im = im[:, :, :2]
+    elif im.shape[2] == 4:
+        im = im[:, :, :3]
     # Resize so smallest dim = 256, preserving aspect ratio
     h, w, _ = im.shape
     if h < w:
