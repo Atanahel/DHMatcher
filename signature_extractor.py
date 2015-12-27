@@ -27,29 +27,25 @@ class SignatureExtractor:
 
 
 class SignatureExtractorManager:
-    _current_signature_extractor_manager = None
+    signature_extractor_list = list()  # type: List[SignatureExtractor]
 
-    def __init__(self):
-        self.signature_extractor_list = list()  # type: List[SignatureExtractor]
-
-    def compute_signatures(self, image: np.ndarray) -> Dict[str, np.ndarray]:
+    @classmethod
+    def compute_signatures(cls, image: np.ndarray) -> Dict[str, np.ndarray]:
         signatures_result = dict()
-        for signature_extractor in self.signature_extractor_list:
+        for signature_extractor in cls.signature_extractor_list:
             signatures_tmp = signature_extractor.compute_signatures(image)
             for (signature_name, signature) in signatures_tmp:
                 signatures_result[signature_name] = signature
         return signatures_result
 
-    def get_all_signature_names(self) -> List[str]:
+    @classmethod
+    def get_all_signature_names(cls) -> List[str]:
         return [name
-                for signature_extractor in self.signature_extractor_list
+                for signature_extractor in cls.signature_extractor_list
                 for name in signature_extractor.signature_names]
 
-    def add_signature_extractor(self, signature_extractor: SignatureExtractor):
-        # Check that the signature name does not already exists
-        assert(len(set(self.get_all_signature_names()).intersection(signature_extractor.signature_names)) == 0)
-        self.signature_extractor_list.append(signature_extractor)
-
     @classmethod
-    def get_current(cls):
-        return cls._current_signature_extractor_manager
+    def add_signature_extractor(cls, signature_extractor: SignatureExtractor):
+        # Check that the signature name does not already exists
+        assert(len(set(cls.get_all_signature_names()).intersection(signature_extractor.signature_names)) == 0)
+        cls.signature_extractor_list.append(signature_extractor)
