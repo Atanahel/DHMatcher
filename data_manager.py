@@ -9,6 +9,8 @@ class DatabaseElement:
 
 
 class DataManager:
+    _current_data_manager = None
+
     def __init__(self):
         self.signature_array = np.empty((0, 1024), dtype=np.float32)
         self.metadata_array = np.empty((0,), dtype=np.object)
@@ -42,3 +44,14 @@ class DataManager:
         self.metadata_array = np.delete(self.metadata_array, idx, axis=0)
         for metadata in self.metadata_array[idx:].ravel():
             self.url_metadata_index[metadata['image_url']] -= 1
+
+    @classmethod
+    def get_current_data_manager(cls) -> 'DataManager':
+        return cls._current_data_manager
+
+    @classmethod
+    def set_current_data_manager(cls, _data_manager: 'DataManager') -> None:
+        cls._current_data_manager = _data_manager
+
+
+

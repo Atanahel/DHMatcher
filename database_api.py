@@ -1,7 +1,12 @@
 from flask import abort
 from flask_restful import Resource, reqparse
-from data_manager import DatabaseElement
+from data_manager import DatabaseElement, DataManager
 import numpy as np
+from models_lasagne import build_model_vgg16, prep_image_vgg
+import os.path
+from matplotlib.pyplot import imread
+import io
+from urllib.request import urlopen
 
 
 metadata_parser = reqparse.RequestParser()
@@ -13,14 +18,19 @@ metadata_parser.add_argument('additional_metadata', type=dict, default=dict(), l
 image_url_metadata_parser = metadata_parser.copy()
 image_url_metadata_parser.add_argument('image_url', type=str, location='json')
 
-data_manager = None
-
 
 def _get_image_url(args: dict) -> str:
         image_url = args['image_url']
-        if not data_manager.has_url(image_url):
+        if not DataManager.get_current_data_manager().has_url(image_url):
             abort(400)
         return image_url
+
+
+def _generate_signature_from_url(image_url: str) -> np.ndarray:
+    ext = os.path.splitext(image_url)[1]
+    im = imread(io.BytesIO(urlopen(image_url).read()), ext)
+    if len(im.shape) == 2:
+        im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
 
 
 class DatabaseAPI(Resource):
@@ -28,14 +38,14 @@ class DatabaseAPI(Resource):
     def post(self):
         args = image_url_metadata_parser.parse_args()
         image_url = args['image_url']
-        if data_manager.has_url(image_url):
+        if DataManager.get_current_data_manager().has_url(image_url):
             abort(400, "image_url already present in the database")
         # TODO generate image signature
-        data_manager.add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
+        DataManager.get_current_data_manager().add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
 
 
 def _check_has_image_url(image_url: str) -> str:
-        if not data_manager.has_url(image_url):
+        if not DataManager.get_current_data_manager().has_url(image_url):
             abort(400, "image_url not present in the database")
 
 
@@ -43,15 +53,15 @@ class DatabaseElementAPI(Resource):
 
     def get(self, image_url: str):
         _check_has_image_url(image_url)
-        return data_manager.get_metadata_from_url(image_url)
+        return DataManager.get_current_data_manager().get_metadata_from_url(image_url)
 
     def put(self, image_url: str):
         _check_has_image_url(image_url)
         args = metadata_parser.parse_args()
         args['image_url'] = image_url
-        data_manager.set_metadata_from_url(args)
+        DataManager.get_current_data_manager().set_metadata_from_url(args)
 
     def delete(self, image_url: str):
         _check_has_image_url(image_url)
-        data_manager.remove_url(image_url)
+        DataManager.get_current_data_manager().remove_url(image_url)
 
