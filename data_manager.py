@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Dict
 
 
 class DatabaseElement:
@@ -9,49 +10,36 @@ class DatabaseElement:
 
 
 class DataManager:
-    _current_data_manager = None
+    signature_array = np.empty((0, 1024), dtype=np.float32)
+    metadata_array = np.empty((0,), dtype=np.object)
+    url_metadata_index = dict()  # type: Dict[str, np.ndarray]
 
-    def __init__(self):
-        self.signature_array = np.empty((0, 1024), dtype=np.float32)
-        self.metadata_array = np.empty((0,), dtype=np.object)
-        self.url_metadata_index = dict()
+    @classmethod
+    def has_url(cls, image_url: str) -> bool:
+        return image_url in cls.url_metadata_index
 
-        # When necessary
-        # self.new_elements = list()
-        # self.to_be_removed_url = list()
+    @classmethod
+    def get_metadata_from_url(cls, image_url: str) -> dict:
+        assert(cls.has_url(image_url))
+        return cls.metadata_array[cls.url_metadata_index[image_url]]
 
-    def has_url(self, image_url: str) -> bool:
-        return image_url in self.url_metadata_index
-
-    def get_metadata_from_url(self, image_url: str) -> dict:
-        assert(self.has_url(image_url))
-        return self.metadata_array[self.url_metadata_index[image_url]]
-
-    def set_metadata_from_url(self, metadata: dict):
+    @classmethod
+    def set_metadata_from_url(cls, metadata: dict):
         image_url = metadata['image_url']
-        assert(self.has_url(image_url))
-        self.metadata_array[self.url_metadata_index[image_url]] = metadata
-
-    def add_element(self, element: DatabaseElement):
-        self.signature_array = np.append(self.signature_array, element.signature.reshape((1,-1)), axis=0)
-        self.metadata_array = np.append(self.metadata_array, np.array([element.metadata]), axis=0)
-        self.url_metadata_index[element.metadata['image_url']] = self.metadata_array.shape[0] - 1
-
-    def remove_url(self, image_url: str):
-        idx = self.url_metadata_index[image_url]
-        del self.url_metadata_index[image_url]
-        self.signature_array = np.delete(self.signature_array, idx, axis=0)
-        self.metadata_array = np.delete(self.metadata_array, idx, axis=0)
-        for metadata in self.metadata_array[idx:].ravel():
-            self.url_metadata_index[metadata['image_url']] -= 1
+        assert(cls.has_url(image_url))
+        cls.metadata_array[cls.url_metadata_index[image_url]] = metadata
 
     @classmethod
-    def get_current_data_manager(cls) -> 'DataManager':
-        return cls._current_data_manager
+    def add_element(cls, element: DatabaseElement):
+        cls.signature_array = np.append(cls.signature_array, element.signature.reshape((1,-1)), axis=0)
+        cls.metadata_array = np.append(cls.metadata_array, np.array([element.metadata]), axis=0)
+        cls.url_metadata_index[element.metadata['image_url']] = cls.metadata_array.shape[0] - 1
 
     @classmethod
-    def set_current_data_manager(cls, _data_manager: 'DataManager') -> None:
-        cls._current_data_manager = _data_manager
-
-
-
+    def remove_url(cls, image_url: str):
+        idx = cls.url_metadata_index[image_url]
+        del cls.url_metadata_index[image_url]
+        cls.signature_array = np.delete(cls.signature_array, idx, axis=0)
+        cls.metadata_array = np.delete(cls.metadata_array, idx, axis=0)
+        for metadata in cls.metadata_array[idx:].ravel():
+            cls.url_metadata_index[metadata['image_url']] -= 1

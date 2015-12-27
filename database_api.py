@@ -2,7 +2,6 @@ from flask import abort
 from flask_restful import Resource, reqparse
 from data_manager import DatabaseElement, DataManager
 import numpy as np
-from models_lasagne import build_model_vgg16, prep_image_vgg
 import os.path
 from matplotlib.pyplot import imread
 import io
@@ -21,7 +20,7 @@ image_url_metadata_parser.add_argument('image_url', type=str, location='json')
 
 def _get_image_url(args: dict) -> str:
         image_url = args['image_url']
-        if not DataManager.get_current_data_manager().has_url(image_url):
+        if not DataManager.has_url(image_url):
             abort(400)
         return image_url
 
@@ -38,14 +37,14 @@ class DatabaseAPI(Resource):
     def post(self):
         args = image_url_metadata_parser.parse_args()
         image_url = args['image_url']
-        if DataManager.get_current_data_manager().has_url(image_url):
+        if DataManager.has_url(image_url):
             abort(400, "image_url already present in the database")
         # TODO generate image signature
-        DataManager.get_current_data_manager().add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
+        DataManager.add_element(DatabaseElement(args, np.zeros((1024,), dtype=np.float32)))
 
 
 def _check_has_image_url(image_url: str) -> str:
-        if not DataManager.get_current_data_manager().has_url(image_url):
+        if not DataManager.has_url(image_url):
             abort(400, "image_url not present in the database")
 
 
@@ -53,15 +52,15 @@ class DatabaseElementAPI(Resource):
 
     def get(self, image_url: str):
         _check_has_image_url(image_url)
-        return DataManager.get_current_data_manager().get_metadata_from_url(image_url)
+        return DataManager.get_metadata_from_url(image_url)
 
     def put(self, image_url: str):
         _check_has_image_url(image_url)
         args = metadata_parser.parse_args()
         args['image_url'] = image_url
-        DataManager.get_current_data_manager().set_metadata_from_url(args)
+        DataManager.set_metadata_from_url(args)
 
     def delete(self, image_url: str):
         _check_has_image_url(image_url)
-        DataManager.get_current_data_manager().remove_url(image_url)
+        DataManager.remove_url(image_url)
 
