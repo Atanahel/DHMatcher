@@ -90,7 +90,8 @@ def build_model_vgg16() -> typing.Tuple[typing.Dict[str, Layer], np.ndarray]:
         print('Weight file not found, downloading...')
         os.system('wget -O {} https://s3.amazonaws.com/lasagne/recipes/pretrained/imagenet/vgg16.pkl'
                   .format(params_file))
-    params_data = pickle.load(open(params_file, 'rb'), encoding='latin-1')
+    with open(params_file, 'rb') as file:
+        params_data = pickle.load(file, encoding='latin-1')
     lasagne.layers.set_all_param_values(net['prob'], params_data['param values'])
     flip_filters_convlayer_network(net.values())
     # CLASSES = params_data['synset words']

@@ -57,8 +57,8 @@ class SignatureExtractorManager:
     @classmethod
     def initialize_signature_extractors(cls):
         net, mean = models_lasagne.build_model_vgg16()
-        input_layer = net['input']  # type: layers.InputLayer
-        assert(input_layer, layers.InputLayer)
+        input_layer = net['input']
+        assert(isinstance(input_layer, layers.InputLayer))
         computing_function = theano.function([input_layer.input_var], layers.get_output([net['fc6'], net['fc7']]))
         signature_extractor = SignatureExtractor(lambda img: models_lasagne.prep_image_vgg(img, mean),
                                                  computing_function,

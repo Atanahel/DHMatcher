@@ -10,7 +10,7 @@ class DatabaseElement:
 
 
 class DataManager:
-    signature_array = np.empty((0, 1024), dtype=np.float32)
+    signature_array = np.empty((0, 4096), dtype=np.float32)
     metadata_array = np.empty((0,), dtype=np.object)
     url_metadata_index = dict()  # type: Dict[str, np.ndarray]
 
@@ -31,8 +31,12 @@ class DataManager:
 
     @classmethod
     def add_element(cls, element: DatabaseElement):
-        cls.signature_array = np.append(cls.signature_array, element.signatures['VGG16_center_fc6'].reshape((1, -1)), axis=0)
-        cls.metadata_array = np.append(cls.metadata_array, np.array([element.metadata]), axis=0)
+        base_signature = 'VGG16_center_fc6'
+        assert(base_signature in element.signatures)
+        cls.signature_array = np.append(cls.signature_array,
+                                        element.signatures[base_signature].reshape((1, -1)), axis=0)
+        cls.metadata_array = np.append(cls.metadata_array,
+                                       np.array([element.metadata]), axis=0)
         cls.url_metadata_index[element.metadata['image_url']] = cls.metadata_array.shape[0] - 1
 
     @classmethod
