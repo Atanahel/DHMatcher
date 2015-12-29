@@ -6,15 +6,16 @@ import models_lasagne
 
 
 class SignatureExtractor:
-    def __init__(self, preprocessing_function: Callable[np.ndarray],
-                 computing_function: Callable,
+    def __init__(self, preprocessing_function: Callable[[np.ndarray], np.ndarray],
+                 computing_function: Callable[[np.ndarray], Union[np.ndarray, List[np.ndarray]]],
                  signature_names: Union[str, List[str]]):
         self.preprocessing_function = preprocessing_function
         self.computing_function = computing_function
         if isinstance(signature_names, str):
             self.signature_names = [signature_names]
         else:
-            assert(computing_function.n_returned_outputs == len(signature_names))
+            if isinstance(computing_function, theano.compile.Function):
+                assert(computing_function.n_returned_outputs == len(signature_names))
             self.signature_names = signature_names
 
     def compute_signatures(self, image: np.ndarray) -> List[Tuple[str, np.ndarray]]:
@@ -56,7 +57,9 @@ class SignatureExtractorManager:
     @classmethod
     def initialize_signature_extractors(cls):
         net, mean = models_lasagne.build_model_vgg16()
-        computing_function = theano.function([net['input'].input_var], layers.get_output([net['fc6'], net['fc7']]))
+        input_layer = net['input']  # type: layers.InputLayer
+        assert(input_layer, layers.InputLayer)
+        computing_function = theano.function([input_layer.input_var], layers.get_output([net['fc6'], net['fc7']]))
         signature_extractor = SignatureExtractor(lambda img: models_lasagne.prep_image_vgg(img, mean),
                                                  computing_function,
                                                  ['VGG16_center_fc6', 'VGG16_center_fc7'])
