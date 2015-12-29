@@ -22,7 +22,7 @@ def _block_until_server_on():
     server_on = False
     while not server_on:
         try:
-            requests.get(server_address, timeout=1)
+            requests.get(server_address, timeout=5)
             server_on = True
         except requests.ConnectionError:
             print('Waiting for server to be online...')
@@ -50,7 +50,9 @@ class TestDHMatcher(unittest.TestCase):
     def test_scenario1(self):
         # Adding element
         response = requests.post(server_address+'/database', json=element1)
-        self.assert200Response(response, "Adding an element failed")
+        self.assert200Response(response, "Adding an element")
+        response = requests.post(server_address+'/database', json={'image_url': 'http://sdjfhlqdkfjhlqsdkjfh.jpg'})
+        self.assert4xxError(response, "Trying to add a wrong image")
         response = requests.post(server_address+'/database', json=element1)
         self.assert4xxError(response, "Trying to add an element that is already in the database")
 

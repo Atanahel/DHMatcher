@@ -6,6 +6,7 @@ import os.path
 from matplotlib.pyplot import imread
 import io
 from urllib.request import urlopen
+from urllib.error import URLError
 from signature_extractor import SignatureExtractorManager
 from typing import Dict
 
@@ -28,9 +29,14 @@ def _get_image_url(args: dict) -> str:
 
 def _generate_signatures_from_url(image_url: str) -> Dict[str, np.ndarray]:
     ext = os.path.splitext(image_url)[1]
-    im = imread(io.BytesIO(urlopen(image_url).read()), ext)
-    if len(im.shape) == 2:
-        im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    try:
+        http_response = urlopen(image_url)
+    except URLError:
+        raise ValueError('image_url unreachable : {} '.format(image_url))
+    try:
+        im = imread(io.BytesIO(http_response.read()), ext)
+    except IOError:
+        raise ValueError('Could not decode image : {}'.format(image_url))
     return SignatureExtractorManager.compute_signatures(im)
 
 
@@ -41,7 +47,11 @@ class DatabaseAPI(Resource):
         image_url = args['image_url']
         if DataManager.has_url(image_url):
             abort(400, "image_url already present in the database")
-        DataManager.add_element(DatabaseElement(args, _generate_signatures_from_url(image_url)))
+        try:
+            signatures = _generate_signatures_from_url(image_url)
+        except ValueError as err:
+            abort(400, str(err))
+        DataManager.add_element(DatabaseElement(args, signatures))
 
 
 def _check_has_image_url(image_url: str) -> str:
