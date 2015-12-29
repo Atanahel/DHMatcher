@@ -46,7 +46,7 @@ class DatabaseAPI(Resource):
 
 def _check_has_image_url(image_url: str) -> str:
         if not DataManager.has_url(image_url):
-            abort(400, "image_url not present in the database")
+            abort(404, "image_url not present in the database")
 
 
 class DatabaseElementAPI(Resource):

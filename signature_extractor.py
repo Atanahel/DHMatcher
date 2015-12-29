@@ -51,14 +51,15 @@ class SignatureExtractorManager:
     @classmethod
     def add_signature_extractor(cls, signature_extractor: SignatureExtractor):
         # Check that the signature name does not already exists
-        assert(len(set(cls.get_all_signature_names()).intersection(signature_extractor.signature_names)) == 0)
+        assert len(set(cls.get_all_signature_names()).intersection(signature_extractor.signature_names)) == 0,\
+            'signature_name already exists for '+cls.__name__
         cls.signature_extractor_list.append(signature_extractor)
 
     @classmethod
     def initialize_signature_extractors(cls):
         net, mean = models_lasagne.build_model_vgg16()
         input_layer = net['input']
-        assert(isinstance(input_layer, layers.InputLayer))
+        assert isinstance(input_layer, layers.InputLayer)
         computing_function = theano.function([input_layer.input_var], layers.get_output([net['fc6'], net['fc7']]))
         signature_extractor = SignatureExtractor(lambda img: models_lasagne.prep_image_vgg(img, mean),
                                                  computing_function,
