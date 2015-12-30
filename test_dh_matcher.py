@@ -30,15 +30,6 @@ def _block_until_server_on():
 
 
 class TestDHMatcher(unittest.TestCase):
-    def setUp(self):
-        self.server_process = Process(target=dh_matcher.app.run)
-        self.server_process.start()
-        _block_until_server_on()
-
-    def tearDown(self):
-        # Kill server
-        self.server_process.terminate()
-        self.server_process.join()
 
     def assert4xxError(self, response: requests.Response, msg: str):
         self.assertGreaterEqual(response.status_code, 400, msg)
@@ -46,6 +37,19 @@ class TestDHMatcher(unittest.TestCase):
 
     def assert200Response(self, response: requests.Response, msg: str):
         self.assertEqual(response.status_code, 200, msg)
+
+    def test_scenario2(self):
+        # Adding element
+        response = requests.post(server_address+'/database', json=element1)
+        self.assert200Response(response, "Adding an element failed")
+
+        # Search for that element
+        search_parameters = {'positive_image_urls': [element1['image_url']]}
+        response = requests.post(server_address+'/search', json=search_parameters)
+        self.assert200Response(response, 'Basic search')
+        search_parameters = {'positive_image_urls': [element1['image_url']+'fsjldk']}
+        response = requests.post(server_address+'/search', json=search_parameters)
+        self.assert4xxError(response, 'Trying with an image not in the database')
 
     def test_scenario1(self):
         # Adding element
@@ -72,16 +76,14 @@ class TestDHMatcher(unittest.TestCase):
         response = requests.delete(server_address+'/database/'+element1['image_url'])
         self.assert4xxError(response, "Trying to remove an already removed element")
 
-    def test_scenario2(self):
-        # Adding element
-        response = requests.post(server_address+'/database', json=element1)
-        self.assert200Response(response, "Adding an element failed")
-
-        # Search for that element
-        search_parameters = {'positive_image_urls': [element1['image_url']]}
-        response = requests.post(server_address+'/search', json=search_parameters)
-        self.assert200Response(response, 'Basic search failed')
-
 if __name__ == '__main__':
+    # Initalisation
     SignatureExtractorManager.initialize_signature_extractors()
+    server_process = Process(target=dh_matcher.app.run)
+    server_process.start()
+    _block_until_server_on()
+    # Tests
     unittest.main()
+    # Close server
+    server_process.terminate()
+    server_process.join()

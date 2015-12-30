@@ -37,7 +37,8 @@ class SearchAPI(Resource):
             scores = search_algorithms.search_svm(positive_indices, negative_indices, DataManager.signature_array)
             method = '2-classes-svm'
         # Generate the ouput
-        results_ind = np.argsort(scores)[-1:-nb_results:-1]
+        scores = scores.ravel()  # flatten the scores array
+        results_ind = np.argsort(scores)[-1:-(max(nb_results, len(scores))+1):-1]
         results = list()
         for i in results_ind.ravel():
             url = DataManager.metadata_array[i]['image_url']
