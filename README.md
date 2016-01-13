@@ -48,13 +48,13 @@ Body : none
 
 Returns : `json` describing the image 
 
--`id`
--`image_url`
--`metadata`
--`webpage_url` if available
--`origin`
--`features` features computed for this image
--`indexes` search indexes it is registered in
+- `id`
+- `image_url`
+- `metadata`
+- `webpage_url` if available
+- `origin`
+- `features` features computed for this image
+- `indexes` search indexes it is registered in
 
 * **PUT**
 
