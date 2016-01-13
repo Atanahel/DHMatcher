@@ -1,4 +1,4 @@
-# DHMatcher
+# ReplicaFinder
 
 This is a `Flask` web service that allows indexing of images in order to make them searchable.
 
