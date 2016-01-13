@@ -9,6 +9,8 @@ or directly into the API url.
 * Arbitrary metadata can be linked to an image.
 * All operations require data as `json` for the request and give a `json` answer as well.
 
+State of features in progress can be seen [here](https://github.com/Atanahel/ReplicaFinder/wiki)
+
 ## API
 
 It is divided into two parts `database` which are operations to modify the database and `search` for the searching operations.
