@@ -33,7 +33,7 @@ class DatabaseAPI(Resource):
 
         # Creates the document to be inserted
         new_document = {'image_url': image_url,
-                        'origin': 'image-matcher',
+                        'origin': replica.config.DEFAULT_ORIGIN_WEBAPP,
                         'metadata': args['metadata']}
 
         # Tries to insert, abort if key already present
@@ -45,6 +45,8 @@ class DatabaseAPI(Resource):
 
         # Launch the task of the computation of features
         replica.features.features.compute_features_for_img_in_db.delay(uuid)
+
+        return {'id': uuid}
 
 
 class DatabaseElementAPI(Resource):
