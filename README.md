@@ -34,7 +34,7 @@ Body : `json` with fields :
 - `image_url`
 - (optional) `webpage_url` : webpage describing the image if there is any
 - (optional) `metadata` : see below for precisions
-- (optional) `origin` : if you hesitate, leave it blank. Will default to `image-matcher`
+- (optional) `origin` : if you hesitate, leave it blank. Will default to `web-app`
 
 Returns : `json` with fields :
 
