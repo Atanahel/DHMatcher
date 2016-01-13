@@ -2,7 +2,6 @@ from flask import Flask, abort
 from flask_restful import Api
 import database_api
 import search_api
-from signature_extractor import SignatureExtractorManager
 
 app = Flask(__name__)
 api = Api(app)
@@ -13,5 +12,4 @@ api.add_resource(database_api.DatabaseElementAPI, '/database/<path:image_url>')
 api.add_resource(search_api.SearchAPI, '/search')
 
 if __name__ == '__main__':
-    SignatureExtractorManager.initialize_signature_extractors()
     app.run(debug=True)
