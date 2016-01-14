@@ -1,4 +1,4 @@
-# DHMatcher
+# ReplicaFinder
 
 This is a `Flask` web service that allows indexing of images in order to make them searchable.
 
@@ -8,6 +8,8 @@ Principles :
 or directly into the API url.
 * Arbitrary metadata can be linked to an image.
 * All operations require data as `json` for the request and give a `json` answer as well.
+
+State of features in progress can be seen [here](https://github.com/Atanahel/ReplicaFinder/wiki)
 
 ## API
 
@@ -34,7 +36,7 @@ Body : `json` with fields :
 - `image_url`
 - (optional) `webpage_url` : webpage describing the image if there is any
 - (optional) `metadata` : see below for precisions
-- (optional) `origin` : if you hesitate, leave it blank. Will default to `image-matcher`
+- (optional) `origin` : if you hesitate, leave it blank. Will default to `web-app`
 
 Returns : `json` with fields :
 
