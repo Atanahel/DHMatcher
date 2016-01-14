@@ -5,6 +5,7 @@ import replica.util
 import replica.config
 import replica.features.features
 import requests
+from search_api import index_manager
 
 metadata_parser = reqparse.RequestParser()
 metadata_parser.add_argument('metadata', type=dict, default=dict(), location='json')
@@ -45,7 +46,7 @@ class DatabaseAPI(Resource):
 
         # Launch the task of the computation of features
         replica.features.features.compute_features_for_img_in_db.delay(uuid)
-
+        index_manager.ask_for_index_rebuilding()
         return {'id': uuid}
 
 
@@ -68,3 +69,4 @@ class DatabaseElementAPI(Resource):
         deleted = replica.util.remove_element_from_image_url(image_url)
         if not deleted:
             abort(404, "image_url not found : {}".format('image_url'))
+        index_manager.ask_for_index_rebuilding()
