@@ -1,21 +1,20 @@
 import unittest
 import dh_matcher
 import requests
-from signature_extractor import SignatureExtractorManager
 from multiprocessing import Process
 
 server_address = 'http://127.0.0.1:5000'
 
 element1 = {
-          "image_url": "http://www.wga.hu/art/l/leonardo/04/0monalis.jpg",
-          "author": "LEONARDO da Vinci",
-          "title": "Mona Lisa (La Gioconda)",
-          "date": "1503-5",
-          "additional_metadata": {
-            "WGA_id": 153647,
-            "added_by": "Benoit"
-          }
-        }
+    "image_url": "http://www.wga.hu/art/l/leonardo/04/0monalis.jpg",
+    "webpage_url": "http://www.wga.hu/frames-e.html?/html/l/leonardo/04/1monali.html",
+    "metadata": {
+        "author": "LEONARDO da Vinci",
+        "title": "Mona Lisa (La Gioconda)",
+        "date": "1503-5",
+        "WGA_id": 153647
+    }
+}
 
 
 def _block_until_server_on():
@@ -78,7 +77,6 @@ class TestDHMatcher(unittest.TestCase):
 
 if __name__ == '__main__':
     # Initalisation
-    SignatureExtractorManager.initialize_signature_extractors()
     server_process = Process(target=dh_matcher.app.run)
     server_process.start()
     _block_until_server_on()

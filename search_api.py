@@ -1,7 +1,7 @@
 from flask import abort
 from flask_restful import Resource, reqparse
 import replica.util
-from replica.config import DEFAULT_IMAGES_COLLECTION, IMAGES_DB
+from replica.config import IMAGES_COLLECTION
 from index_manager import IndexManager
 
 search_parser = reqparse.RequestParser()
@@ -38,8 +38,9 @@ class SearchAPI(Resource):
         try:
             search_results = index_manager.search(positive_ids, negative_ids, int(nb_results*1.2))
         except KeyError:
+            index_manager.ask_for_index_rebuilding()
             # TODO Give more information about the index rebuilding? Start rebuilding the index now?
-            abort(404, "One image is not present in the index, wait for rebuilding")
+            abort(404, "One image is not present in the index, please wait for the index to be rebuilt")
             return
 
         # Generate the output
@@ -51,7 +52,7 @@ class SearchAPI(Resource):
             except StopIteration:
                 break
             # Get the image information
-            image_info = replica.util.get_element_from_id(r['id'], DEFAULT_IMAGES_COLLECTION, IMAGES_DB)
+            image_info = replica.util.get_element_from_id(r['id'], IMAGES_COLLECTION)
             # Append the result if the image was found
             if image_info is not None:
                 results.append({'image': image_info, 'score': r['score']})

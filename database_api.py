@@ -39,8 +39,7 @@ class DatabaseAPI(Resource):
 
         # Tries to insert, abort if key already present
         uuid = replica.util.insert_element_to_database(new_document,
-                                                       replica.config.DEFAULT_IMAGES_COLLECTION,
-                                                       replica.config.IMAGES_DB)
+                                                       replica.config.IMAGES_COLLECTION)
         if uuid is None:
             abort(400, "Image is already present in the database : {}".format(image_url))
 
