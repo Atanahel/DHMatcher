@@ -1,4 +1,4 @@
-from flask import Flask, abort
+from flask import Flask
 from flask_restful import Api
 import database_api
 import search_api

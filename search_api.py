@@ -1,7 +1,7 @@
 from flask import abort
 from flask_restful import Resource, reqparse
 import replica.util
-from replica.config import IMAGES_COLLECTION
+from replica import Config
 from index_manager import IndexManager
 
 search_parser = reqparse.RequestParser()
@@ -52,7 +52,7 @@ class SearchAPI(Resource):
             except StopIteration:
                 break
             # Get the image information
-            image_info = replica.util.get_element_from_id(r['id'], IMAGES_COLLECTION)
+            image_info = replica.util.get_element_from_id(r['id'], Config.IMAGES_COLLECTION)
             # Append the result if the image was found
             if image_info is not None:
                 results.append({'image': image_info, 'score': r['score']})

@@ -2,7 +2,6 @@ from flask import abort
 from flask_restful import Resource, reqparse
 import replica
 import replica.util
-import replica.config
 import replica.features.features
 import requests
 from search_api import index_manager
@@ -34,12 +33,12 @@ class DatabaseAPI(Resource):
 
         # Creates the document to be inserted
         new_document = {'image_url': image_url,
-                        'origin': replica.config.DEFAULT_ORIGIN_WEBAPP,
+                        'origin': replica.Config.DEFAULT_ORIGIN_WEBAPP,
                         'metadata': args['metadata']}
 
         # Tries to insert, abort if key already present
         uuid = replica.util.insert_element_to_database(new_document,
-                                                       replica.config.IMAGES_COLLECTION)
+                                                       replica.Config.IMAGES_COLLECTION)
         if uuid is None:
             abort(400, "Image is already present in the database : {}".format(image_url))
 
