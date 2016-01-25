@@ -37,12 +37,17 @@ class IndexManager:
         self.period = period*60
         self.feature_name = feature_name
         self._lock = threading.Lock()
-        self._current_index = indexes.load_index(feature_name)  # type: indexes.RawIndex
+        try:
+            self._current_index = indexes.load_index(feature_name)  # type: indexes.RawIndex
+        except FileNotFoundError:
+            self._current_index = None
         self.need_rebuilding = False
 
         threading.Thread(target=self._thread, daemon=True).start()
 
     def search(self, *args, **kwargs):
+        if self._current_index is None:
+            return []
         with self._lock:
             return self._current_index.search(*args, **kwargs)
 
