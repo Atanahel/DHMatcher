@@ -1,3 +1,7 @@
+# DEPRECATED
+
+Go to [the main Replica repo folder](https://github.com/dhlab-epfl/Replica/tree/master/finder) instead.
+
 # ReplicaFinder
 
 This is a `Flask` web service that allows indexing of images in order to make them searchable.
